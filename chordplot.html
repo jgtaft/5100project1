@@ -8,9 +8,13 @@
   </style>
 </head>
 <body>
-  <svg id="chordplot" width="900" height="900"></svg>
+  <svg id="chordplot" width="1000" height="800"></svg>
   <script>
 
+var colors = ["#a0e3b7", "#2a8665", "#21f0b6", "#304866", "#bcaff9", "#4553c2", "#e18af4", "#9f2998", "#08a9e5", "#abe65b", "#65a10e", "#604020", "#e0ae95", "#e65216", "#c64e68", "#f1c039", "#fb2076"]
+var types = ["Ambulance", "Bicycle", "Bus", "Fire Truck", "Large Comm. Vehicle",
+"Livery Vechicle", "Motorcycle", "Other", "Passenger Vehicle", "Pedicab", "Pickup Truck",
+"Scooter", "Small Comm. Vehicle", "SUV", "Taxi", "Unknown", "Van"];
 //read in the data
 var collisionMatrix = [];
 d3.text("colmatr.csv", function(text){
@@ -26,14 +30,14 @@ d3.text("colmatr.csv", function(text){
   var chordplot = d3.select("#chordplot"),
     width = +chordplot.attr("width"),
     height = +chordplot.attr("height"),
-    outerRadius = Math.min(width, height) * 0.5 - 40,
-    innerRadius = outerRadius - 30;
+    outerRadius = 360,
+    innerRadius = 330;
 
   var formatValue = d3.formatPrefix(",.0", 1e3);
 
 
   var chord = d3.chord()
-    .padAngle(0.05)
+    .padAngle(0.03)
     .sortSubgroups(d3.descending);
 
   var arc = d3.arc()
@@ -43,13 +47,12 @@ d3.text("colmatr.csv", function(text){
   var ribbon = d3.ribbon()
     .radius(innerRadius);
 
-  var colors = ["#a0e3b7", "#2a8665", "#21f0b6", "#304866", "#bcaff9", "#4553c2", "#e18af4", "#9f2998", "#08a9e5", "#abe65b", "#65a10e", "#604020", "#e0ae95", "#e65216", "#c64e68", "#f1c039", "#fb2076"]
   var color = d3.scaleOrdinal()
     .domain(d3.range(17))
     .range(colors);
 
   var g = chordplot.append("g")
-    .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")")
+    .attr("transform", "translate(400," + height / 2 + ")")
     .datum(chord(collisionMatrix));
 
   var group = g.append("g")
@@ -63,34 +66,34 @@ d3.text("colmatr.csv", function(text){
     .style("stroke", function(d) { return d3.rgb(color(d.index)).darker(); })
     .attr("d", arc);
 
-  var groupTick = group.selectAll(".group-tick")
-    .data(function(d) { return groupTicks(d, 1e3); })
-    .enter().append("g")
-    .attr("class", "group-tick")
-    .attr("transform", function(d) { return "rotate(" + (d.angle * 180 / Math.PI - 90) + ") translate(" + outerRadius + ",0)"; });
+  // var groupTick = group.selectAll(".group-tick")
+  //   .data(function(d) { return groupTicks(d, 1e3); })
+  //   .enter().append("g")
+  //   .attr("class", "group-tick")
+  //   .attr("transform", function(d) { return "rotate(" + (d.angle * 180 / Math.PI - 90) + ") translate(" + outerRadius + ",0)"; });
 
-  groupTick.append("line")
-    .attr("x2", 6);
-
-  var groupTick = group.selectAll(".group-tick")
-
-  groupTick
-    .filter(function(d) { return d.value % 5e3 === 0; })
-    .append("text")
-      .attr("x", 8)
-      .attr("dy", ".35em")
-      .attr("transform", function(d) { return d.angle > Math.PI ? "rotate(180) translate(-16)" : null; })
-      .style("text-anchor", function(d) { return d.angle > Math.PI ? "end" : null; })
-      .text(function(d) { return formatValue(d.value); });
+  // groupTick.append("line")
+  //   .attr("x2", 6);
+  //
+  // var groupTick = group.selectAll(".group-tick")
+  //
+  // groupTick
+  //   .filter(function(d) { return d.value % 5e3 === 0; })
+  //   .append("text")
+  //   .attr("x", 8)
+  //   .attr("dy", ".35em")
+  //   .attr("transform", function(d) { return d.angle > Math.PI ? "rotate(180) translate(-16)" : null; })
+  //   .style("text-anchor", function(d) { return d.angle > Math.PI ? "end" : null; })
+  //   .text(function(d) { return formatValue(d.value); });
 
   g.append("g")
-      .attr("class", "ribbons")
+    .attr("class", "ribbons")
     .selectAll("path")
     .data(function(chords) { return chords; })
     .enter().append("path")
       .attr("d", ribbon)
-      .style("fill", function(d) { return color(d.target.index); })
-      .style("stroke", function(d) { return d3.rgb(color(d.target.index)).darker(); });
+      .style("fill", function(d) { return color(d.target.index); });
+    //  .style("stroke", function(d) { return d3.rgb(color(d.target.index)).darker(); });
 
   // Returns an array of tick angles and values for a given group and step.
   function groupTicks(d, step) {
@@ -99,8 +102,31 @@ d3.text("colmatr.csv", function(text){
       return {value: value, angle: value * k + d.startAngle};
     });
   }
-
 });
+var chordplot = d3.select("#chordplot");
+  for (var i = 0; i<types.length; i++){
+    chordplot.append("rect")
+      .attr("height", "20")
+      .attr("width", "20")
+      .attr("x", "810")
+      .attr("y", (i*25) + 40)
+      .attr("fill", colors[i]);
+
+    chordplot.append("text")
+      .attr("x", "835")
+      .attr("y", (i*25) + 55)
+      .text(types[i]);
+  };
+
+
+//add the circles
+// for (var i=0; i<wickCircle.length; i++ ){
+//   wickplot.append("circle")
+//   .attr("r", 4)
+//   .attr("cx", wickXScale(wickCircle[i][0]))
+//   .attr("cy", wickYScale(wickCircle[i][1]))
+//   .on("click", makeBlue);
+// };
 
   </script>
 
