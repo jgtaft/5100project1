@@ -1,0 +1,136 @@
+<html>
+<head>
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+  <script src="http://d3js.org/topojson.v2.min.js"></script>
+
+  <style>
+
+  path.boroughs.0 { fill: #ddc; }
+  path.boroughs.1 { fill: #cdd; }
+  path.boroughs.2 { fill: #cdc; }
+  path.boroughs.3 { fill: #dcd; }
+  path.boroughs.4 { fill: #ccd; }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+
+<script>
+//http://www1.nyc.gov/site/planning/data-maps/nyc-population/census-2010.page
+//cd codes: https://www1.nyc.gov/assets/planning/download/pdf/data-maps/open-data/selfac_datainfo.pdf
+//population density data from: http://www1.nyc.gov/site/planning/data-maps/nyc-population/census-2010.page
+//JIA codes and populations: https://www1.nyc.gov/assets/planning/download/pdf/data-maps/nyc-population/census2010/2010_cd_geographic_notes.pdf
+var width = 960,
+  height = 800;
+
+var map = d3.select("#map").append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+var projection = d3.geoConicEqualArea();
+var pathGenerator = d3.geoPath().projection(projection);
+
+// var scaleColors = ["#ffffff", "#f6d4bf", "#eda97f", "#e47e3f", "#db5300"];
+// var popScale = d3.scaleLinear().domain([0, 25, 50, 75, 100]).range(scaleColors);
+
+var boroughs;
+var comms;
+var points = [];
+
+function parseLine(line){
+  return [Number(line["LONGITUDE"]), Number(line["LATITUDE"]), Number(line["PERSONS INJURED"]), Number(line["PERSONS KILLED"])];
+};
+// var popDensity;
+
+// var parseRow = function(row){
+//   row.ID = Number(row.ID);
+//   return row;
+// }
+
+d3.queue()
+  .defer(d3.json, "boros.json")
+  .defer(d3.json, "communities.json")
+  .defer(d3.csv, "collisionsClean.csv", parseLine)
+  .await(function(error, rawBoros, rawComms, rawPoints){
+    boroughs = rawBoros;
+    console.log(boroughs);
+    //comms = topojson.feature(rawComms, rawComms.objects.nyct2010);
+    comms = rawComms;
+    points = rawPoints;
+    // console.log(rawPop);
+    // popDensity = d3.map(rawPop, function(d){ return d.ID; });
+    // console.log(popDensity);
+
+    showMap();
+  })
+
+function showMap(){
+
+  projection.fitExtent([[0,0], [map.attr("width"), map.attr("height")]], boroughs);
+
+  var boroughpaths = map.selectAll("path.boroughs").data(boroughs.features);
+
+  boroughpaths.enter().append("path")
+    .attr("class", "boroughs")
+    .merge(boroughpaths)
+    .attr("d", function(boroughs){ return pathGenerator(boroughs); })
+    .attr("fill", "LightGrey")
+    .attr("stroke", "Black");
+
+  var commpaths = map.selectAll("path.tracts").data(comms.features);
+
+  commpaths.enter().append("path")
+    .attr("class", "comms")
+    .merge(commpaths)
+    .attr("d", function(comms){ return pathGenerator(comms); })
+    .attr("fill", "none")
+    .attr("stroke", "Grey")
+    .attr("stroke-width", "0.5")
+    .on("click", function(d){ console.log(d.id);});
+
+  for(i=0; i<points.length; i++){
+
+    map.append("circle")
+    .attr("r", size)
+    .attr("cx", projection(points[i])[0])
+    .attr("cy", projection(points[i])[1])
+    .attr("fill", fillcolor)
+    .attr("opacity", opac);
+  }
+
+  function fillcolor(){
+    if (points[i][2]>=1){
+      return "red";
+    }if (points[i][3]>=1){
+      return "green";
+    }else{
+      return "none";
+    }
+  }
+
+  function opac(){
+    if (points[i][2]>=1){
+      return ".4";
+    }if (points[i][3]>=1){
+      return "1";
+    }else{
+      return ".2";
+    }
+  }
+
+  function size(){
+    if (points[i][2]>=1){
+      return "1";
+    }if (points[i][3]>=1){
+      return "3";
+    }else{
+      return "1";
+    }
+  }
+
+}
+
+
+</script>
+
+</body></html>
