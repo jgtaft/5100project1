@@ -5,6 +5,10 @@
 	 Kevin Park
 	-->
 
+<!-- Collisions.csv is from the NYC Open data initiative. It was cleaned to remove accidents
+where nobody was injured or killed, and to remove data with missing lat/long coordinates,
+borough names, and accident causes. -->
+
 <html>
 	<head>
 
@@ -28,7 +32,7 @@
 		<script>
 
 		var width = 1200,
-		height = 800;
+		height = 850;
 
 		var col_set = [];
 		var reason_dict = {};
@@ -44,7 +48,8 @@
 		var pathGenerator = d3.geoPath().projection(projection);
 
 		var fillArr = ["#52ef99", "#fec9af", "#a2f0eb", "#a7e831", "#f8d147"];
-		var boroArr = ["Brooklyn", "Bronx", "Manhattan", "Staten Island", "Queens"];
+		var fillArrDarker = ["#2d8756", "#b76b45", "#68911d", "#5b9b97", "#a0800e"];
+		var boroArr = ["Bronx", "Manhattan", "Queens", "Brooklyn", "Staten Island"];
 
 		class collision {
 			constructor(date, time, long, lat, borough, injuries, deaths,reason) {
@@ -62,7 +67,7 @@
 		d3.queue()
 		.defer(d3.json, "boros.json")
 		.defer(d3.json, "communities.json")
-		.defer(d3.csv, "collisions.csv")
+		.defer(d3.csv, "collisions2.csv")
 		.await(analyze);
 
 		function analyze(error, rawBoros, rawComms, data) {
@@ -107,7 +112,7 @@
 
 		function showMap(){
 
-			projection.fitExtent([[0,0], [630, map.attr("height")]], boroughs);
+			projection.fitExtent([[0,50], [610, map.attr("height")]], boroughs);
 
 			boroughpaths = map.selectAll("path.boroughs").data(boroughs.features);
 
@@ -165,16 +170,83 @@
 				}
 			};
 
+			for(j=0;j<boroArr.length; j++){
+				map.append("text")
+					.attr("x", 800)
+					.attr("y", (j*140)+ 100)
+					.attr("font-size", 30)
+					.attr("text-anchor", "end")
+					.attr("fill", fillArrDarker[j])
+					.text(boroArr[j]);
 
-			//  d3.select("svg").append("text")
-			// .attr("x", width/4)
-      //       .attr("y", height/8)
-      //       .attr("text-anchor", "middle")
-			// .text("How to get injured \n (or even killed) \n by a motor vehicle \n in New York City")
-			// .attr("font-family", "sans-serif")
-			// .attr("font-size", "20px")
-			// .attr("fill", "black");
+				map.append("rect")
+					.attr("x", 810)
+					.attr("y", (j*140) + 80)
+					.attr("height", 120)
+					.attr("width", 200)
+					.attr("stroke", fillArrDarker[j])
+					.attr("stroke-width", 2)
+					.attr("fill", "none");
+			}
 
+			map.append("path")
+				.attr("d", "M 350 150 L 700 105 L 810 105")
+				.attr("stroke-width", 2)
+				.attr("stroke", fillArrDarker[0])
+				.attr("fill", "none");
+
+			map.append("path")
+				.attr("d", "M 250 300 L 650 245 L 810 245")
+				.attr("stroke-width", 2)
+				.attr("stroke", fillArrDarker[1])
+				.attr("fill", "none");
+
+			map.append("path")
+				.attr("d", "M 450 350 L 690 385 L 810 385")
+				.attr("stroke-width", 2)
+				.attr("stroke", fillArrDarker[2])
+				.attr("fill", "none");
+
+			map.append("path")
+				.attr("d", "M 320 500 L 680 525 L 810 525")
+				.attr("stroke-width", 2)
+				.attr("stroke", fillArrDarker[3])
+				.attr("fill", "none");
+
+			map.append("path")
+				.attr("d", "M 120 670 L 620 665 L 810 665")
+				.attr("stroke-width", 2)
+				.attr("stroke", fillArrDarker[4])
+				.attr("fill", "none");
+
+			map.append("text")
+				.attr("x", width/2)
+				      .attr("y", 30)
+				      .attr("text-anchor", "middle")
+				.text("How to get injured (or even killed) by a motor vehicle in New York City")
+				.attr("font-family", "sans-serif")
+				.attr("font-size", "35")
+				.attr("fill", "black");
+
+				//UNCOMMENT THE CODE BELOW TO GET GREY GRIDLINES WHICH ARE USEFUL FOR PLACING THINGS
+
+			// for (k=0;k<12;k++){
+			// 	map.append("line")
+			// 		.attr("x1", (k*100) + 100)
+			// 		.attr("y1", 0)
+			// 		.attr("x2", (k*100) + 100)
+			// 		.attr("y2", 800)
+			// 		.attr("stroke", "LightGrey")
+			// }
+			//
+			// for (k=0;k<8;k++){
+			// 	map.append("line")
+			// 		.attr("x1", 0)
+			// 		.attr("y1", (k*100) + 100)
+			// 		.attr("x2", 1200)
+			// 		.attr("y2", (k*100) + 100)
+			// 		.attr("stroke", "LightGrey");
+			// }
 
 		};
 
