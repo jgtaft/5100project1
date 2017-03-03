@@ -16,6 +16,7 @@ borough names, and accident causes. -->
 
 		<script src="https://d3js.org/d3.v4.min.js"></script>
   		<script src="http://d3js.org/topojson.v2.min.js"></script>
+			<link href="https://fonts.googleapis.com/css?family=Anton" rel="stylesheet">
 
 		<style>
 			body { font-family: Calibri, sans-serif; }
@@ -28,11 +29,10 @@ borough names, and accident causes. -->
 	<body>
 
 		<div id="map"></div>
-
 		<script>
 
 		var width = 1200,
-		height = 850;
+		height = 900;
 
 		var col_set = [];
 		var reason_dict = {};
@@ -47,8 +47,8 @@ borough names, and accident causes. -->
 		var projection = d3.geoAlbersUsa();
 		var pathGenerator = d3.geoPath().projection(projection);
 
-		var fillArr = ["#52ef99", "#fec9af", "#a2f0eb", "#a7e831", "#f8d147"];
-		var fillArrDarker = ["#2d8756", "#b76b45", "#68911d", "#5b9b97", "#a0800e"];
+		var fillArr = ["#72e5ef", "#a6b6f9", "#e3a0fa",  "#a7e831", "#f8d147"];
+		var fillArrDarker = ["#176970", "#4e5987", "#405e09", "#4f2b5b", "#7c640c"];
 		var boroArr = ["Bronx", "Manhattan", "Queens", "Brooklyn", "Staten Island"];
 
 		class collision {
@@ -112,7 +112,7 @@ borough names, and accident causes. -->
 
 		function showMap(){
 
-			projection.fitExtent([[0,50], [610, map.attr("height")]], boroughs);
+			projection.fitExtent([[0,100], [610, map.attr("height")]], boroughs);
 
 			boroughpaths = map.selectAll("path.boroughs").data(boroughs.features);
 
@@ -146,7 +146,7 @@ borough names, and accident causes. -->
 
 			function fillcolor(){
 				if (col_set[i].injuries>=1){
-					return "#AD0DFF";
+					return "#472700";
 				}if (col_set[i].deaths>=1){
 					return "#FF280D";
 				}else{
@@ -156,14 +156,13 @@ borough names, and accident causes. -->
 
 			function opac(){
 				if (col_set[i].injuries>=1){
-					return ".5";
+					return ".6";
 				}if (col_set[i].deaths>=1){
 					return "1";
 				}
 			};
-
 			function size(){
-				if (col_set[i].injuries>=1){
+				if(col_set[i].injuries>=1){
 					return "1";
 				}if (col_set[i].deaths>=1){
 					return "3";
@@ -173,15 +172,16 @@ borough names, and accident causes. -->
 			for(j=0;j<boroArr.length; j++){
 				map.append("text")
 					.attr("x", 800)
-					.attr("y", (j*140)+ 100)
+					.attr("y", (j*140)+ 150)
 					.attr("font-size", 30)
 					.attr("text-anchor", "end")
 					.attr("fill", fillArrDarker[j])
+					.attr("font-family", "Anton")
 					.text(boroArr[j]);
 
 				map.append("rect")
 					.attr("x", 810)
-					.attr("y", (j*140) + 80)
+					.attr("y", (j*140) + 130)
 					.attr("height", 120)
 					.attr("width", 200)
 					.attr("stroke", fillArrDarker[j])
@@ -190,63 +190,63 @@ borough names, and accident causes. -->
 			}
 
 			map.append("path")
-				.attr("d", "M 350 150 L 700 105 L 810 105")
+				.attr("d", "M 350 200 L 700 155 L 810 155")
 				.attr("stroke-width", 2)
 				.attr("stroke", fillArrDarker[0])
 				.attr("fill", "none");
 
 			map.append("path")
-				.attr("d", "M 250 300 L 650 245 L 810 245")
+				.attr("d", "M 250 350 L 650 295 L 810 295")
 				.attr("stroke-width", 2)
 				.attr("stroke", fillArrDarker[1])
 				.attr("fill", "none");
 
 			map.append("path")
-				.attr("d", "M 450 350 L 690 385 L 810 385")
+				.attr("d", "M 450 400 L 690 435 L 810 435")
 				.attr("stroke-width", 2)
 				.attr("stroke", fillArrDarker[2])
 				.attr("fill", "none");
 
 			map.append("path")
-				.attr("d", "M 320 500 L 680 525 L 810 525")
+				.attr("d", "M 320 550 L 680 575 L 810 575")
 				.attr("stroke-width", 2)
 				.attr("stroke", fillArrDarker[3])
 				.attr("fill", "none");
 
 			map.append("path")
-				.attr("d", "M 120 670 L 620 665 L 810 665")
+				.attr("d", "M 120 720 L 620 715 L 810 715")
 				.attr("stroke-width", 2)
 				.attr("stroke", fillArrDarker[4])
 				.attr("fill", "none");
 
 			map.append("text")
 				.attr("x", width/2)
-				      .attr("y", 30)
+				      .attr("y", 50)
 				      .attr("text-anchor", "middle")
-				.text("How to get injured (or even killed) by a motor vehicle in New York City")
-				.attr("font-family", "sans-serif")
-				.attr("font-size", "35")
+				.text("HOW TO GET INJURED OR KILLED BY A MOTOR VEHICLE IN NEW YORK CITY")
+				.attr("font-family", "Anton")
+				.attr("font-size", "40")
 				.attr("fill", "black");
 
 				//UNCOMMENT THE CODE BELOW TO GET GREY GRIDLINES WHICH ARE USEFUL FOR PLACING THINGS
 
-			// for (k=0;k<12;k++){
-			// 	map.append("line")
-			// 		.attr("x1", (k*100) + 100)
-			// 		.attr("y1", 0)
-			// 		.attr("x2", (k*100) + 100)
-			// 		.attr("y2", 800)
-			// 		.attr("stroke", "LightGrey")
-			// }
-			//
-			// for (k=0;k<8;k++){
-			// 	map.append("line")
-			// 		.attr("x1", 0)
-			// 		.attr("y1", (k*100) + 100)
-			// 		.attr("x2", 1200)
-			// 		.attr("y2", (k*100) + 100)
-			// 		.attr("stroke", "LightGrey");
-			// }
+			for (k=0;k<12;k++){
+				map.append("line")
+					.attr("x1", (k*100) + 100)
+					.attr("y1", 0)
+					.attr("x2", (k*100) + 100)
+					.attr("y2", 800)
+					.attr("stroke", "LightGrey")
+			}
+
+			for (k=0;k<8;k++){
+				map.append("line")
+					.attr("x1", 0)
+					.attr("y1", (k*100) + 100)
+					.attr("x2", 1200)
+					.attr("y2", (k*100) + 100)
+					.attr("stroke", "LightGrey");
+			}
 
 		};
 
