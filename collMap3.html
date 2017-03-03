@@ -1,0 +1,187 @@
+<!-- Data Driven Web Applications
+	 Tuesday March 7,2017
+	 Luis Plaz
+	 Jessie Taft
+	 Kevin Park
+	-->
+
+<html>
+	<head>
+
+		<title>Project 1 : Static Data Visualization</title>
+
+		<script src="https://d3js.org/d3.v4.min.js"></script>
+  		<script src="http://d3js.org/topojson.v2.min.js"></script>
+
+		<style>
+			body { font-family: Calibri, sans-serif; }
+			svg { border: solid #ccc 3px;
+				  display: block;
+				  margin: auto }
+		</style>
+
+	</head>
+	
+	<body>
+
+		<div id="map"></div>
+
+		<script>
+
+		var width = 650,
+		height = 600;
+
+		var col_set = [];
+		var reason_dict = {};
+		var i = 0;
+		var boroughs;
+		var comms;
+
+		var map = d3.select("#map").append("svg")
+		.attr("width", width)
+		.attr("height", height);
+
+		var projection = d3.geoConicEqualArea();
+		var pathGenerator = d3.geoPath().projection(projection);
+
+		class colision {
+			constructor(date, time, long, lat, borough, injuries, deaths,reason) {
+				this.date = date;
+				this.time = time;
+				this.long = long;
+				this.lat = lat;
+				this.borough = borough;
+				this.injuries = injuries;
+				this.deaths = deaths;
+				this.reason = reason;
+			}
+		};
+
+		d3.queue()
+		.defer(d3.json, "boros.json")
+		.defer(d3.json, "communities.json")
+		.defer(d3.csv, "collisions.csv")
+		.await(analyze);
+
+		function analyze(error, rawBoros, rawComms, data) {
+
+			if(error) { console.log(error); }
+
+			boroughs = rawBoros;
+			comms = rawComms;
+			
+			data.forEach(function(col) {
+
+				if(col.DATE != "" && col.TIME != "" && col.BOROUGH != "" && col.LONGITUDE != "" && col.LATITUDE != "" && col['PERSONS INJURED'] != "" && col['PERSONS KILLED'] != "" && col['VEHICLE 1 FACTOR'] != "" ){
+					var new_colision = new colision(col.DATE,col.TIME,col.LONGITUDE,col.LATITUDE,col.BOROUGH,col.INJURIES,col.DEATHS,col['VEHICLE 1 FACTOR'])
+					col_set.push(new_colision);
+				}
+				i++;
+
+			});
+
+				topReasons(col_set)
+
+				showMap();
+		};
+
+		function topReasons (colArr){
+
+			for (index in colArr) {
+				if(colArr[index].borough in reason_dict == false){
+					reason_dict[colArr[index].borough] = {};
+				}else{
+
+					if(colArr[index].reason in reason_dict[colArr[index].borough] == false){
+						reason_dict[colArr[index].borough][colArr[index].reason] = 1;
+					}else{
+						reason_dict[colArr[index].borough][colArr[index].reason] += 1;
+					}
+
+				}
+			}
+		};
+
+
+		function showMap(){
+
+			projection.fitExtent([[0,0], [map.attr("width"), map.attr("height")]], boroughs);
+
+			boroughpaths = map.selectAll("path.boroughs").data(boroughs.features);
+			var fillArr = ["#72FF9B","#68E869","#AAFF7F","#C0E868","#FFFE72"];
+
+		    boroughpaths.enter().append("path")
+		    .attr("class", "boroughs")
+		   	.attr("fill", function(){return fillArr.pop()})
+		    .merge(boroughpaths)
+		    .attr("d", function(boroughs){ return pathGenerator(boroughs); })
+		    .attr("stroke", "Black")
+		    .attr("stroke-width","3px")
+		    .attr("opacity","0.7");
+
+	  		var commpaths = map.selectAll("path.tracts").data(comms.features);
+
+			commpaths.enter().append("path")
+		    .attr("class", "comms")
+		    .merge(commpaths)
+		    .attr("d", function(comms){ return pathGenerator(comms); })
+		    .attr("fill", "none")
+		    .attr("stroke", "#EEBEFF")
+		    .attr("stroke-width", "0.5")
+		    .on("click", function(d){ console.log(d.id);});
+
+		    for(i=0; i<col_set.length; i++){
+		    	map.append("circle")
+				.attr("r", size)
+			    .attr("cx", projection([col_set[i].long,col_set[i].lat])[0])
+			    .attr("cy", projection([col_set[i].long,col_set[i].lat])[1])
+			    .attr("fill", fillcolor)
+			    .attr("opacity", opac);
+			};
+
+			function fillcolor(){
+				if (col_set[i].injuries>=1){
+					return "#AD0DFF";
+				}if (col_set[i].deaths>=1){
+					return "#FF280D";
+				}else{
+					return "none";
+				}
+			};
+
+			function opac(){
+				if (col_set[i].injuries>=1){
+					return ".5";
+				}if (col_set[i].deaths>=1){
+					return "1";
+				}else{
+					return ".2";
+				}
+			};
+
+			function size(){
+				if (col_set[i].injuries>=1){
+					return "1";
+				}if (col_set[i].deaths>=1){
+					return "3";
+				}else{
+					return "1";
+				}
+			};
+
+			 d3.select("svg").append("text")
+			.attr("x", width/2)
+            .attr("y", height/6)
+            .attr("text-anchor", "middle")
+			.text("Collision in NEW YORK CITY")
+			.attr("font-family", "sans-serif")
+			.attr("font-size", "20px")
+			.attr("fill", "black");
+			
+		};
+
+		</script>
+
+	</body>
+
+</html>
