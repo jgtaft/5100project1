@@ -121,7 +121,7 @@ borough names, and accident causes. -->
 		function setReasons(dictionary) {
 			var wierdest_reason = "";
 			var rare_factor = 1;
-				
+
 			for (var borough in dictionary) {
 				var total_colisions = 0;
 				borough_info[borough]["total"] = 0;
@@ -291,7 +291,7 @@ borough names, and accident causes. -->
 				if(col_set[i].deaths>=1){
 					return {r: 3, fill: "#FF280D", opacity: 1};
 				}else if(col_set[i].injuries>=1){
-					return {r: 0.5 * col_set[i].injuries , fill: "#472700", opacity: .7};
+					return {r: Math.sqrt(col_set[i].injuries) , fill: "#472700", opacity: .7};
 				}
 			};
 
@@ -384,21 +384,28 @@ borough names, and accident causes. -->
 		legend.append("circle")
 			.attr("cx", 120)
 			.attr("cy", 160)
-			.attr("r", 1)
+			.attr("r", Math.sqrt(1))
 			.attr("fill", "#472700")
 			.attr("opacity" ,".7");
 
 		legend.append("circle")
 			.attr("cx", 120)
-			.attr("cy", 190)
-			.attr("r", 0.5*32)
+			.attr("cy", 185)
+			.attr("r", Math.sqrt(10))
+			.attr("fill", "#472700")
+			.attr("opacity" ,".7");
+
+		legend.append("circle")
+			.attr("cx", 120)
+			.attr("cy", 210)
+			.attr("r", Math.sqrt(32))
 			.attr("fill", "#472700")
 			.attr("opacity" ,".7");
 
 		legend.append("circle")
 			.attr("cx", 120)
 			.attr("cy", 250)
-			.attr("r", 0.5*64)
+			.attr("r", Math.sqrt(64))
 			.attr("fill", "#472700")
 			.attr("opacity" ,".7");
 
@@ -415,8 +422,6 @@ borough names, and accident causes. -->
 			.attr("id", "legendPath")
 			.attr("d", "M 70 167 L 70 245")
 			.attr("stroke", "black");
-
-
 
 		map.append("path")
 			.attr("id", "pointerpath")
@@ -442,48 +447,6 @@ borough names, and accident causes. -->
 			.attr("id", "pointerpath")
 			.attr("d", "M 120 720 L 620 715 L 810 715")
 			.attr("stroke", fillArrDarker[4]);
-		};
-
-
-		function showByType(){
-			map.append("text")
-				.attr("x", 350)
-				.attr("y", 200)
-				.attr("font-size", 50)
-				.attr("fill", fillArrLighter[0])
-				.text(boroArr[0]);
-
-			map.append("text")
-				.attr("x", 50)
-				.attr("y", 350)
-				.attr("font-size", 50)
-				.attr("fill", fillArrLighter[1])
-				.text(boroArr[1]);
-
-			map.append("text")
-				.attr("x", 500)
-				.attr("y", 400)
-				.attr("font-size", 50)
-				.attr("fill", fillArrLighter[2])
-				.text(boroArr[2]);
-
-			map.append("text")
-				.attr("x", 50)
-				.attr("y", 550)
-				.attr("font-size", 50)
-				.attr("fill", fillArrLighter[3])
-				.text(boroArr[3]);
-
-			map.append("text")
-				.attr("x", 100)
-				.attr("y", 750)
-				.attr("font-size", 50)
-				.attr("fill", fillArrLighter[4])
-				.text(boroArr[4]);
-
-			// var binGenerator = d3.histogram();
-			// var xScale =
-
 		};
 
 
