@@ -15,13 +15,16 @@ borough names, and accident causes. -->
 		<title>Project 1 : Static Data Visualization</title>
 
 		<script src="https://d3js.org/d3.v4.min.js"></script>
-  		<script src="http://d3js.org/topojson.v2.min.js"></script>
-			<link href="https://fonts.googleapis.com/css?family=Anton" rel="stylesheet">
+		<script src="http://d3js.org/topojson.v2.min.js"></script>
+		<script src="https://d3js.org/d3-selection-multi.v0.4.min.js"></script>
+
+		<link href="https://fonts.googleapis.com/css?family=Anton" rel="stylesheet">
 
 		<style>
-			body { font-family: Calibri, sans-serif; }
-			svg { border: solid #ccc 3px;
-				  display: block;}
+			svg text#title { fill: Grey; font-size: 40; font-family: Anton; }
+			svg path#pointerpath { stroke-width: 2; fill: none; }
+			svg text#borotext { font-size: 30; font-family: Anton; }
+
 		</style>
 
 	</head>
@@ -31,24 +34,27 @@ borough names, and accident causes. -->
 		<div id="map"></div>
 		<script>
 
-		var width = 1200,
+		var width = 1230,
 		height = 900;
 
 		var col_set = [];
 		var reason_dict = {};
 		var i = 0;
+
 		var boroughs;
 		var comms;
+		var popdata;
+
+		var projection = d3.geoAlbersUsa();
+		var pathGenerator = d3.geoPath().projection(projection);
 
 		var map = d3.select("#map").append("svg")
 		.attr("width", width)
 		.attr("height", height);
 
-		var projection = d3.geoAlbersUsa();
-		var pathGenerator = d3.geoPath().projection(projection);
-
-		var fillArr = ["#72e5ef", "#a6b6f9", "#e3a0fa",  "#a7e831", "#f8d147"];
+		var fillArr = ["#72e5ef", "#a6b6f9", "#e3a0fa", "#a7e831", "#f8d147"];
 		var fillArrDarker = ["#176970", "#4e5987", "#405e09", "#4f2b5b", "#7c640c"];
+		var fillArrLighter = ["#d9f7f9", "#d7dcef", "#efffd3", "#e5d7ea", "#f2e5b8"];
 		var boroArr = ["Bronx", "Manhattan", "Queens", "Brooklyn", "Staten Island"];
 
 		class collision {
@@ -70,14 +76,14 @@ borough names, and accident causes. -->
 		.defer(d3.csv, "collisions2.csv")
 		.await(analyze);
 
-		function analyze(error, rawBoros, rawComms, data) {
+		function analyze(error, rawBoros, rawComms, colldata) {
 
 			if(error) { console.log(error); }
 
 			boroughs = rawBoros;
 			comms = rawComms;
 
-			data.forEach(function(col) {
+			colldata.forEach(function(col) {
 
 				if(col.DATE != "" && col.TIME != "" && col.BOROUGH != "" && col.LONGITUDE != "" && col.LATITUDE != "" && col['PERSONS INJURED'] != "" && col['PERSONS KILLED'] != "" && col['VEHICLE 1 FACTOR'] != "" ){
 					var new_collision = new collision(col.DATE,col.TIME,col.LONGITUDE,col.LATITUDE,col.BOROUGH,col.INJURIES,col.DEATHS,col['VEHICLE 1 FACTOR'])
@@ -87,9 +93,9 @@ borough names, and accident causes. -->
 
 			});
 
-				topReasons(col_set)
+				showMapLight();
+				// showMapDark();
 
-				showMap();
 		};
 
 		function topReasons (colArr){
@@ -98,19 +104,121 @@ borough names, and accident causes. -->
 				if(colArr[index].borough in reason_dict == false){
 					reason_dict[colArr[index].borough] = {};
 				}else{
-
 					if(colArr[index].reason in reason_dict[colArr[index].borough] == false){
-						reason_dict[colArr[index].borough][colArr[index].reason] = 1;
-					}else{
-						reason_dict[colArr[index].borough][colArr[index].reason] += 1;
+						reason_dict[colArr[index].borough][colArr[index].reason] = d3
 					}
-
 				}
 			}
 		};
 
+		function showMapDark(){
 
-		function showMap(){
+			map.append("text")
+				.attr("id", "title")
+				.attr("x", width/2)
+				.attr("y", 50)
+				.attr("text-anchor", "middle")
+				.text("MOTOR VEHICLE ACCIDENT INJURIES IN NYC");
+
+			map.append("rect")
+				.attr("height", height)
+				.attr("width", width)
+				.attr("fill", "#000033");
+
+			projection.fitExtent([[0,100], [610, map.attr("height")]], boroughs);
+
+			var boroughpaths = map.selectAll("path.boroughs").data(boroughs.features);
+
+			boroughpaths.enter().append("path")
+				.attr("class", "boroughs")
+				.attr("fill", function(){return fillArrDarker.pop()})
+				.merge(boroughpaths)
+				.attr("d", function(boroughs){ return pathGenerator(boroughs); })
+				.attr("stroke", "none");
+
+			var commpaths = map.selectAll("path.comms").data(comms.features);
+
+			commpaths.enter().append("path")
+				.attr("class", "comms")
+				.merge(commpaths)
+				.attr("d", function(comms){ return pathGenerator(comms); })
+				.attr("fill", "none")
+				.attr("stroke", "#8080ff")
+				.attr("stroke-width", "0.5");
+
+			for(i=0; i<col_set.length; i++){
+				map.append("circle")
+					.attr("cx", projection([col_set[i].long,col_set[i].lat])[0])
+					.attr("cy", projection([col_set[i].long,col_set[i].lat])[1])
+					.attrs(setAttrs());
+			};
+
+			function setAttrs(){
+				if(col_set[i].deaths>=1 ){
+					return {r: 2 * Math.sqrt(col_set[i].deaths), fill: "#ffff99", opacity: 1, stroke: "#ffffff"};
+				}else if(col_set[i].injuries>=4){
+					return {r: Math.sqrt(col_set[i].injuries), fill: "#ffff99", opacity: .5};
+				}
+			};
+
+			showByBoroughDark();
+		};
+
+		function showByBoroughDark(){
+
+			for(j=0;j<boroArr.length; j++){
+				map.append("text")
+					.attr("id", "borotext")
+					.attr("x", 800)
+					.attr("y", (j*140)+ 150)
+					.attr("text-anchor", "end")
+					.attr("fill", "#cc9900")
+					.text(boroArr[j]);
+
+				map.append("rect")
+					.attr("x", 810)
+					.attr("y", (j*140) + 130)
+					.attr("height", 120)
+					.attr("width", 200)
+					.attr("stroke", "#cc9900")
+					.attr("stroke-width", 2)
+					.attr("fill", "none");
+			}
+
+			map.append("path")
+				.attr("id", "pointerpath")
+				.attr("d", "M 350 200 L 700 155 L 810 155")
+				.attr("stroke", "#cc9900");
+
+			map.append("path")
+				.attr("id", "pointerpath")
+				.attr("d", "M 250 350 L 650 295 L 810 295")
+				.attr("stroke", "#cc9900");
+
+			map.append("path")
+				.attr("id", "pointerpath")
+				.attr("d", "M 450 400 L 690 435 L 810 435")
+				.attr("stroke", "#cc9900");
+
+			map.append("path")
+				.attr("id", "pointerpath")
+				.attr("d", "M 320 550 L 680 575 L 810 575")
+				.attr("stroke", "#cc9900");
+
+			map.append("path")
+				.attr("id", "pointerpath")
+				.attr("d", "M 120 720 L 620 715 L 810 715")
+				.attr("stroke", "#cc9900");
+		};
+
+		function showMapLight(){
+
+			map.append("text")
+				.attr("id", "title")
+				.attr("x", width/2)
+				.attr("y", 50)
+				.attr("text-anchor", "middle")
+				.text("MOTOR VEHICLE ACCIDENT INJURIES IN NYC");
 
 			projection.fitExtent([[0,100], [610, map.attr("height")]], boroughs);
 
@@ -121,7 +229,7 @@ borough names, and accident causes. -->
 		   	.attr("fill", function(){return fillArr.pop()})
 		    .merge(boroughpaths)
 		    .attr("d", function(boroughs){ return pathGenerator(boroughs); })
-		    .attr("stroke", "Black")
+		    .attr("stroke", "none")
 		    // .attr("stroke-width","3px")
 		    .attr("opacity","0.7");
 
@@ -135,48 +243,34 @@ borough names, and accident causes. -->
 		    .attr("stroke", "#FFFFFF")
 		    .attr("stroke-width", "0.5");
 
-		    for(i=0; i<col_set.length; i++){
-		    	map.append("circle")
-				.attr("r", size)
+	    for(i=0; i<col_set.length; i++){
+	    	map.append("circle")
 			    .attr("cx", projection([col_set[i].long,col_set[i].lat])[0])
 			    .attr("cy", projection([col_set[i].long,col_set[i].lat])[1])
-			    .attr("fill", fillcolor)
-			    .attr("opacity", opac);
+			    .attrs(setAttrs);
 			};
 
-			function fillcolor(){
-				if (col_set[i].injuries>=1){
-					return "#472700";
-				}if (col_set[i].deaths>=1){
-					return "#FF280D";
-				}else{
-					return "none";
+			function setAttrs(){
+				if(col_set[i].deaths>=1){
+					return {r: 3, fill: "#FF280D", opacity: 1};
+				}else if(col_set[i].injuries>=1){
+					return {r: 1, fill: "#472700", opacity: .7};
 				}
 			};
 
-			function opac(){
-				if (col_set[i].injuries>=1){
-					return ".6";
-				}if (col_set[i].deaths>=1){
-					return "1";
-				}
-			};
-			function size(){
-				if(col_set[i].injuries>=1){
-					return "1";
-				}if (col_set[i].deaths>=1){
-					return "3";
-				}
-			};
+			showByBoroughLight();
+		};
+
+
+		function showByBoroughLight(){
 
 			for(j=0;j<boroArr.length; j++){
 				map.append("text")
+					.attr("id", "borotext")
 					.attr("x", 800)
 					.attr("y", (j*140)+ 150)
-					.attr("font-size", 30)
 					.attr("text-anchor", "end")
 					.attr("fill", fillArrDarker[j])
-					.attr("font-family", "Anton")
 					.text(boroArr[j]);
 
 				map.append("rect")
@@ -189,66 +283,96 @@ borough names, and accident causes. -->
 					.attr("fill", "none");
 			}
 
-			map.append("path")
-				.attr("d", "M 350 200 L 700 155 L 810 155")
-				.attr("stroke-width", 2)
-				.attr("stroke", fillArrDarker[0])
-				.attr("fill", "none");
+		map.append("path")
+			.attr("id", "pointerpath")
+			.attr("d", "M 350 200 L 700 155 L 810 155")
+			.attr("stroke", fillArrDarker[0]);
 
-			map.append("path")
-				.attr("d", "M 250 350 L 650 295 L 810 295")
-				.attr("stroke-width", 2)
-				.attr("stroke", fillArrDarker[1])
-				.attr("fill", "none");
+		map.append("path")
+			.attr("id", "pointerpath")
+			.attr("d", "M 250 350 L 650 295 L 810 295")
+			.attr("stroke", fillArrDarker[1]);
 
-			map.append("path")
-				.attr("d", "M 450 400 L 690 435 L 810 435")
-				.attr("stroke-width", 2)
-				.attr("stroke", fillArrDarker[2])
-				.attr("fill", "none");
+		map.append("path")
+			.attr("id", "pointerpath")
+			.attr("d", "M 450 400 L 690 435 L 810 435")
+			.attr("stroke", fillArrDarker[2]);
 
-			map.append("path")
-				.attr("d", "M 320 550 L 680 575 L 810 575")
-				.attr("stroke-width", 2)
-				.attr("stroke", fillArrDarker[3])
-				.attr("fill", "none");
+		map.append("path")
+			.attr("id", "pointerpath")
+			.attr("d", "M 320 550 L 680 575 L 810 575")
+			.attr("stroke", fillArrDarker[3]);
 
-			map.append("path")
-				.attr("d", "M 120 720 L 620 715 L 810 715")
-				.attr("stroke-width", 2)
-				.attr("stroke", fillArrDarker[4])
-				.attr("fill", "none");
+		map.append("path")
+			.attr("id", "pointerpath")
+			.attr("d", "M 120 720 L 620 715 L 810 715")
+			.attr("stroke", fillArrDarker[4]);
+		};
+
+
+
+		function showByType(){
+			map.append("text")
+				.attr("x", 350)
+				.attr("y", 200)
+				.attr("font-size", 50)
+				.attr("fill", fillArrLighter[0])
+				.text(boroArr[0].toUpperCase());
 
 			map.append("text")
-				.attr("x", width/2)
-				      .attr("y", 50)
-				      .attr("text-anchor", "middle")
-				.text("HOW TO GET INJURED OR KILLED BY A MOTOR VEHICLE IN NEW YORK CITY")
-				.attr("font-family", "Anton")
-				.attr("font-size", "40")
-				.attr("fill", "black");
+				.attr("x", 50)
+				.attr("y", 350)
+				.attr("font-size", 50)
+				.attr("fill", fillArrLighter[1])
+				.text(boroArr[1].toUpperCase());
+
+			map.append("text")
+				.attr("x", 500)
+				.attr("y", 400)
+				.attr("font-size", 50)
+				.attr("fill", fillArrLighter[2])
+				.text(boroArr[2].toUpperCase());
+
+			map.append("text")
+				.attr("x", 50)
+				.attr("y", 550)
+				.attr("font-size", 50)
+				.attr("fill", fillArrLighter[3])
+				.text(boroArr[3].toUpperCase());
+
+			map.append("text")
+				.attr("x", 100)
+				.attr("y", 750)
+				.attr("font-size", 50)
+				.attr("fill", fillArrLighter[4])
+				.text(boroArr[4].toUpperCase());
+
+			// var binGenerator = d3.histogram();
+			// var xScale =
+
+		};
+
+
 
 				//UNCOMMENT THE CODE BELOW TO GET GREY GRIDLINES WHICH ARE USEFUL FOR PLACING THINGS
 
-			for (k=0;k<12;k++){
-				map.append("line")
-					.attr("x1", (k*100) + 100)
-					.attr("y1", 0)
-					.attr("x2", (k*100) + 100)
-					.attr("y2", 800)
-					.attr("stroke", "LightGrey")
-			}
-
-			for (k=0;k<8;k++){
-				map.append("line")
-					.attr("x1", 0)
-					.attr("y1", (k*100) + 100)
-					.attr("x2", 1200)
-					.attr("y2", (k*100) + 100)
-					.attr("stroke", "LightGrey");
-			}
-
-		};
+			// for (k=0;k<12;k++){
+			// 	map.append("line")
+			// 		.attr("x1", (k*100) + 100)
+			// 		.attr("y1", 0)
+			// 		.attr("x2", (k*100) + 100)
+			// 		.attr("y2", 900)
+			// 		.attr("stroke", "LightGrey");
+			// }
+			//
+			// for (k=0;k<8;k++){
+			// 	map.append("line")
+			// 		.attr("x1", 0)
+			// 		.attr("y1", (k*100) + 100)
+			// 		.attr("x2", 1200)
+			// 		.attr("y2", (k*100) + 100)
+			// 		.attr("stroke", "LightGrey");
+			// }
 
 		</script>
 
