@@ -93,8 +93,8 @@ borough names, and accident causes. -->
 
 			});
 
-				showMapLight();
-				// showMapDark();
+				// showMapLight();
+				showMapDark();
 
 		};
 
@@ -113,17 +113,17 @@ borough names, and accident causes. -->
 
 		function showMapDark(){
 
+			map.append("rect")
+				.attr("height", height)
+				.attr("width", width)
+				.attr("fill", "#000033");
+
 			map.append("text")
 				.attr("id", "title")
 				.attr("x", width/2)
 				.attr("y", 50)
 				.attr("text-anchor", "middle")
 				.text("MOTOR VEHICLE ACCIDENT INJURIES IN NYC");
-
-			map.append("rect")
-				.attr("height", height)
-				.attr("width", width)
-				.attr("fill", "#000033");
 
 			projection.fitExtent([[0,100], [610, map.attr("height")]], boroughs);
 
