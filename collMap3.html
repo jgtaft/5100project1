@@ -266,7 +266,7 @@ borough names, and accident causes. -->
 				.attr("y", 100)
 				.attr("text-anchor", "middle")
 				.attr("font-size", 50)
-				.text("THE SCARY, THE RARE, AND THE WEIRD");
+				.text("THE WILD, THE WEIRD, AND THE SCARY");
 
 			map.append("text")
 				.attr("x", width/2)
@@ -336,7 +336,7 @@ borough names, and accident causes. -->
 
 				group.append("text")
 					.attr("x", 950)
-					.attr("y", (j*140)+ 150)
+					.attr("y", (j*140)+ 180)
 					.attr("text-anchor", "middle")
 					.attr("fill", fillArrDarker[j])
 					.attr("font-size", 20)
@@ -349,7 +349,7 @@ borough names, and accident causes. -->
 					if(key != "total"){
 						group.append("text")
 						.attr("x", 950)
-						.attr("y", (j*140)+ 150 + line)
+						.attr("y", (j*140)+ 180 + line)
 						.attr("text-anchor", "middle")
 						.attr("font-size" , "12px")
 						.attr("fill", fillArrDarker[j])
@@ -362,7 +362,7 @@ borough names, and accident causes. -->
 
 				group.append("rect")
 					.attr("x", 810)
-					.attr("y", (j*140) + 120)
+					.attr("y", (j*140) + 155)
 					.attr("height", 135)
 					.attr("width", 275)
 					.attr("stroke", fillArrDarker[j])
