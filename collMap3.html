@@ -21,8 +21,9 @@ borough names, and accident causes. -->
 		<link href="https://fonts.googleapis.com/css?family=Anton" rel="stylesheet">
 
 		<style>
+			body { background-color: #f2f2f2}
 			svg#mapDiv { display: block; margin: auto; }
-			svg text#title { fill: Grey; font-size: 40; font-family: Anton; }
+			svg text#title { fill: Grey; font-family: Anton; }
 			svg path#pointerpath { stroke-width: 2; fill: none; }
 			svg text#borotext { font-size: 30; font-family: Anton; }
 
@@ -35,7 +36,7 @@ borough names, and accident causes. -->
 		<div id="map"></div>
 		<script>
 
-		var width = 1230,
+		var width = 1270,
 		height = 900;
 
 		var col_set = [];
@@ -256,9 +257,26 @@ borough names, and accident causes. -->
 				.attr("x", width/2)
 				.attr("y", 50)
 				.attr("text-anchor", "middle")
-				.text("MOTOR VEHICLE ACCIDENT INJURIES IN NYC");
+				.attr("font-size", 40)
+				.text("MOTOR VEHICLE ACCIDENT INJURIES IN NYC:");
 
-			projection.fitExtent([[0,100], [610, map.attr("height")]], boroughs);
+			map.append("text")
+				.attr("id", "title")
+				.attr("x", width/2)
+				.attr("y", 100)
+				.attr("text-anchor", "middle")
+				.attr("font-size", 50)
+				.text("THE SCARY, THE RARE, AND THE WEIRD");
+
+			map.append("text")
+				.attr("x", width/2)
+				.attr("y", 120)
+				.attr("text-anchor", "middle")
+				.attr("fill", "Grey")
+				.attr("font-style", "italic")
+				.text("January 1st through April 30th, 2015");
+
+			projection.fitExtent([[0,160], [610, map.attr("height")]], boroughs);
 
 			boroughpaths = map.selectAll("path.boroughs").data(boroughs.features);
 
@@ -311,17 +329,18 @@ borough names, and accident causes. -->
 				group.append("text")
 					.attr("id", "borotext")
 					.attr("x", 800)
-					.attr("y", (j*140)+ 150)
+					.attr("y", (j*140)+ 200)
 					.attr("text-anchor", "end")
 					.attr("fill", fillArrDarker[j])
 					.text(boroArr[j]);
 
 				group.append("text")
 					.attr("x", 950)
-					.attr("y", (j*140)+ 100)
+					.attr("y", (j*140)+ 150)
 					.attr("text-anchor", "middle")
 					.attr("fill", fillArrDarker[j])
-					.attr("font-weight","bold")
+					.attr("font-size", 20)
+					.attr("font-family", "Anton")
 					.text("Total Incidents : " + borough_info[boroArr[j]]["total"]);
 
 
@@ -330,7 +349,7 @@ borough names, and accident causes. -->
 					if(key != "total"){
 						group.append("text")
 						.attr("x", 950)
-						.attr("y", (j*140)+ 100 + line)
+						.attr("y", (j*140)+ 150 + line)
 						.attr("text-anchor", "middle")
 						.attr("font-size" , "12px")
 						.attr("fill", fillArrDarker[j])
@@ -343,7 +362,7 @@ borough names, and accident causes. -->
 
 				group.append("rect")
 					.attr("x", 810)
-					.attr("y", (j*140) + 80)
+					.attr("y", (j*140) + 120)
 					.attr("height", 135)
 					.attr("width", 275)
 					.attr("stroke", fillArrDarker[j])
