@@ -37,7 +37,7 @@ borough names, and accident causes. -->
 		<div id="map"></div>
 		<script>
 
-		var width = 1300,
+		var width = 1500,
 		height = 1000;
 
 		var col_set = [];
@@ -173,7 +173,7 @@ borough names, and accident causes. -->
 				.attr("font-style", "italic")
 				.text("January 1st through April 30th, 2015");
 
-			projection.fitExtent([[100,200], [650, map.attr("height")]], boroughs);
+			projection.fitExtent([[200,150], [800, map.attr("height")]], boroughs);
 
 			boroughpaths = map.selectAll("path.boroughs").data(boroughs.features);
 
@@ -224,11 +224,9 @@ borough names, and accident causes. -->
 
 			for(j=0;j<boroArr.length; j++){
 
-				var line = 10;
-
 				var group = map.append("g")
 					.attr("id", boroArr[j])
-					.attr("transform", "translate(50,50)");
+					.attr("transform", "translate(180,70)");
 
 				group.append("text")
 					.attr("id", "borotext")
@@ -276,8 +274,8 @@ borough names, and accident causes. -->
 			}
 
 			map.append("text")
-				.attr("x", 850)
-				.attr("y", 190)
+				.attr("x", 980)
+				.attr("y", 210)
 				.attr("font-size", 40)
 				.attr("text-anchor", "end")
 				.attr("font-family", "Anton")
@@ -285,9 +283,9 @@ borough names, and accident causes. -->
 				.text("THE WEIRD");
 
 			map.append("text")
-				.attr("x", 870)
-				.attr("y", 180)
-				.attr("font-size", 22)
+				.attr("x", 1000)
+				.attr("y", 200)
+				.attr("font-size", 20)
 				.attr("font-style", "italic")
 				.attr("font-family", "Merriweather")
 				.attr("fill", "Grey")
@@ -296,165 +294,160 @@ borough names, and accident causes. -->
 		var wild = map.append("g")
 			.attr("id", "wild");
 
-		wild.append("text")
-			.attr("x", 100)
-			.attr("y", 200)
-			.attr("font-size", 40)
-			.attr("text-anchor", "middle")
-			.attr("font-family", "Anton")
-			.attr("fill", "Grey")
-			.text("THE WILD");
+			wild.append("text")
+				.attr("x", 100)
+				.attr("y", 200)
+				.attr("font-size", 40)
+				.attr("font-family", "Anton")
+				.attr("fill", "Grey")
+				.text("THE WILD");
 
-		wild.append("text")
-			.attr("x", 100)
-			.attr("y", 220)
-			.attr("font-size", 22)
-			.attr("font-style", "italic")
-			.attr("text-anchor", "middle")
-			.attr("font-family", "Merriweather")
-			.attr("fill", "Grey")
-			.text("Very rare accident causes");
+			wild.append("text")
+				.attr("x", 100)
+				.attr("y", 220)
+				.attr("font-size", 20)
+				.attr("font-style", "italic")
+				.attr("font-family", "Merriweather")
+				.attr("fill", "Grey")
+				.text("Very rare accident causes");
 
-		wild.append("text")
-			.attr("x", 100)
-			.attr("y", 400)
-			.attr("font-size", 40)
-			.attr("text-anchor", "middle")
-			.attr("font-family", "Anton")
-			.attr("fill", "Grey")
-			.text("THE SCARY");
+			wild.append("text")
+				.attr("x", 100)
+				.attr("y", 400)
+				.attr("font-size", 40)
+				.attr("font-family", "Anton")
+				.attr("fill", "Grey")
+				.text("THE SCARY");
 
-		wild.append("text")
-			.attr("x", 100)
-			.attr("y", 420)
-			.attr("font-size", 22)
-			.attr("font-style", "italic")
-			.attr("font-family", "Merriweather")
-			.attr("text-anchor", "middle")
-			.attr("fill", "Grey")
-			.text("Accidents that caused deaths");
+			wild.append("text")
+				.attr("x", 100)
+				.attr("y", 420)
+				.attr("font-size", 20)
+				.attr("font-style", "italic")
+				.attr("font-family", "Merriweather")
+				.attr("fill", "Grey")
+				.text("Accidents that caused deaths");
 
 
-		var legend = map.append("g")
-			.attr("id", "legend")
-			.attr("transform", "translate(450,600)");
-
-		legend.append("text")
-			.attr("x", 110)
-			.attr("y", 135)
-			.attr("text-anchor", "middle")
-			.attr("fill", fillArrDarker[j])
-			.attr("font-weight","bold")
-			.text("Number Injured");
-
-		legend.append("text")
-			.attr("x", 70)
-			.attr("y", 165)
-			.attr("text-anchor", "middle")
-			.attr("fill", "black")
-			.attr("font-weight","bold")
-			.attr("font-size", "12px")
-			.text("1");
-
-		legend.append("text")
-			.attr("x", 70)
-			.attr("y", 255)
-			.attr("text-anchor", "middle")
-			.attr("fill", "black")
-			.attr("font-weight","bold")
-			.attr("font-size", "12px")
-			.text("64");
-
-		legend.append("circle")
-			.attr("cx", 120)
-			.attr("cy", 160)
-			.attr("r", Math.sqrt(1))
-			.attr("fill", "#472700")
-			.attr("opacity" ,".7");
-
-		legend.append("circle")
-			.attr("cx", 120)
-			.attr("cy", 185)
-			.attr("r", Math.sqrt(10))
-			.attr("fill", "#472700")
-			.attr("opacity" ,".7");
-
-		legend.append("circle")
-			.attr("cx", 120)
-			.attr("cy", 210)
-			.attr("r", Math.sqrt(32))
-			.attr("fill", "#472700")
-			.attr("opacity" ,".7");
-
-		legend.append("circle")
-			.attr("cx", 120)
-			.attr("cy", 250)
-			.attr("r", Math.sqrt(64))
-			.attr("fill", "#472700")
-			.attr("opacity" ,".7");
-
-		legend.append("rect")
-			.attr("x", 45)
-			.attr("y", 115)
-			.attr("height", 180)
-			.attr("width", 130)
-			.attr("stroke", "black")
-			.attr("stroke-width", 2)
-			.attr("fill", "none");
-
-		legend.append("path")
-			.attr("id", "legendPath")
-			.attr("d", "M 70 167 L 70 245")
-			.attr("stroke", "black");
+		// var legend = map.append("g")
+		// 	.attr("id", "legend")
+		// 	.attr("transform", "translate(450,600)");
+		//
+		// 	legend.append("text")
+		// 		.attr("x", 110)
+		// 		.attr("y", 135)
+		// 		.attr("text-anchor", "middle")
+		// 		.attr("fill", fillArrDarker[j])
+		// 		.attr("font-weight","bold")
+		// 		.text("Number Injured");
+		//
+		// 	legend.append("text")
+		// 		.attr("x", 70)
+		// 		.attr("y", 165)
+		// 		.attr("text-anchor", "middle")
+		// 		.attr("fill", "black")
+		// 		.attr("font-weight","bold")
+		// 		.attr("font-size", "12px")
+		// 		.text("1");
+		//
+		// 	legend.append("text")
+		// 		.attr("x", 70)
+		// 		.attr("y", 255)
+		// 		.attr("text-anchor", "middle")
+		// 		.attr("fill", "black")
+		// 		.attr("font-weight","bold")
+		// 		.attr("font-size", "12px")
+		// 		.text("64");
+		//
+		// 	legend.append("circle")
+		// 		.attr("cx", 120)
+		// 		.attr("cy", 160)
+		// 		.attr("r", Math.sqrt(1))
+		// 		.attr("fill", "#472700")
+		// 		.attr("opacity" ,".7");
+		//
+		// 	legend.append("circle")
+		// 		.attr("cx", 120)
+		// 		.attr("cy", 185)
+		// 		.attr("r", Math.sqrt(10))
+		// 		.attr("fill", "#472700")
+		// 		.attr("opacity" ,".7");
+		//
+		// 	legend.append("circle")
+		// 		.attr("cx", 120)
+		// 		.attr("cy", 210)
+		// 		.attr("r", Math.sqrt(32))
+		// 		.attr("fill", "#472700")
+		// 		.attr("opacity" ,".7");
+		//
+		// 	legend.append("circle")
+		// 		.attr("cx", 120)
+		// 		.attr("cy", 250)
+		// 		.attr("r", Math.sqrt(64))
+		// 		.attr("fill", "#472700")
+		// 		.attr("opacity" ,".7");
+		//
+		// 	legend.append("rect")
+		// 		.attr("x", 45)
+		// 		.attr("y", 115)
+		// 		.attr("height", 180)
+		// 		.attr("width", 130)
+		// 		.attr("stroke", "black")
+		// 		.attr("stroke-width", 2)
+		// 		.attr("fill", "none");
+		//
+		// 	legend.append("path")
+		// 		.attr("id", "legendPath")
+		// 		.attr("d", "M 70 167 L 70 245")
+		// 		.attr("stroke", "black");
 
 		var linegroup = map.append("g")
 			.attr("id", "pointerpath")
 			.attr("stroke-width", 2)
 			.attr("fill", "none")
-			.attr("transform", "translate(50,105)");
+			.attr("transform", "translate(180,125)");
 
-		linegroup.append("path")
-			.attr("d", "M 350 200 L 650 155 L 810 155")
-			.attr("stroke", fillArrDarker[0]);
+			linegroup.append("path")
+				.attr("d", "M 350 200 L 650 155 L 810 155")
+				.attr("stroke", fillArrDarker[0]);
 
-		linegroup.append("path")
-			.attr("d", "M 250 350 L 650 295 L 810 295")
-			.attr("stroke", fillArrDarker[1]);
+			linegroup.append("path")
+				.attr("d", "M 250 350 L 650 295 L 810 295")
+				.attr("stroke", fillArrDarker[1]);
 
-		linegroup.append("path")
-			.attr("d", "M 450 400 L 690 435 L 810 435")
-			.attr("stroke", fillArrDarker[2]);
+			linegroup.append("path")
+				.attr("d", "M 450 400 L 690 435 L 810 435")
+				.attr("stroke", fillArrDarker[2]);
 
-		linegroup.append("path")
-			.attr("d", "M 320 550 L 680 575 L 810 575")			.attr("font-family", "Merriweather")
+			linegroup.append("path")
+				.attr("d", "M 320 550 L 680 575 L 810 575")
+				.attr("stroke", fillArrDarker[3]);
 
-			.attr("stroke", fillArrDarker[3]);
-
-		linegroup.append("path")
-			.attr("d", "M 120 720 L 620 715 L 810 715")
-			.attr("stroke", fillArrDarker[4]);
+			linegroup.append("path")
+				.attr("d", "M 120 720 L 620 715 L 810 715")
+				.attr("stroke", fillArrDarker[4]);
 		};
 
 
 				//UNCOMMENT THE CODE BELOW TO GET GREY GRIDLINES WHICH ARE USEFUL FOR PLACING THINGS
 
-			for (k=0;k<12;k++){
-				map.append("line")
-					.attr("x1", (k*100) + 100)
-					.attr("y1", 0)
-					.attr("x2", (k*100) + 100)
-					.attr("y2", 900)
-					.attr("stroke", "LightGrey");
-			}
-
-			for (k=0;k<8;k++){
-				map.append("line")
-					.attr("x1", 0)
-					.attr("y1", (k*100) + 100)
-					.attr("x2", 1200)
-					.attr("y2", (k*100) + 100)
-					.attr("stroke", "LightGrey");
-			}
+			// for (k=0;k<12;k++){
+			// 	map.append("line")
+			// 		.attr("x1", (k*100) + 100)
+			// 		.attr("y1", 0)
+			// 		.attr("x2", (k*100) + 100)
+			// 		.attr("y2", 900)
+			// 		.attr("stroke", "LightGrey");
+			// }
+			//
+			// for (k=0;k<8;k++){
+			// 	map.append("line")
+			// 		.attr("x1", 0)
+			// 		.attr("y1", (k*100) + 100)
+			// 		.attr("x2", 1200)
+			// 		.attr("y2", (k*100) + 100)
+			// 		.attr("stroke", "LightGrey");
+			// }
 
 		</script>
 
