@@ -24,7 +24,6 @@ borough names, and accident causes. -->
 			body { background-color: #f2f2f2}
 			svg#mapDiv { display: block; margin: auto; }
 			svg text#title { fill: Grey; font-family: Anton; }
-			svg path#pointerpath { stroke-width: 2; fill: none; }
 			svg text#borotext { font-size: 30; font-family: Anton; }
 
 		</style>
@@ -276,7 +275,7 @@ borough names, and accident causes. -->
 				.attr("font-style", "italic")
 				.text("January 1st through April 30th, 2015");
 
-			projection.fitExtent([[0,160], [610, map.attr("height")]], boroughs);
+			projection.fitExtent([[50,160], [650, map.attr("height")]], boroughs);
 
 			boroughpaths = map.selectAll("path.boroughs").data(boroughs.features);
 
@@ -321,10 +320,11 @@ borough names, and accident causes. -->
 
 			for(j=0;j<boroArr.length; j++){
 
-				line = 10;
+				var line = 10;
 
-				group = map.append("g")
+				var group = map.append("g")
 					.attr("id", boroArr[j])
+					.attr("transform", "translate(50,0)");
 
 				group.append("text")
 					.attr("id", "borotext")
@@ -335,13 +335,13 @@ borough names, and accident causes. -->
 					.text(boroArr[j]);
 
 				group.append("text")
-					.attr("x", 950)
-					.attr("y", (j*140)+ 180)
-					.attr("text-anchor", "middle")
+					.attr("x", 800)
+					.attr("y", (j*140)+ 235)
+					.attr("text-anchor", "end")
 					.attr("fill", fillArrDarker[j])
 					.attr("font-size", 20)
 					.attr("font-family", "Anton")
-					.text("Total Incidents : " + borough_info[boroArr[j]]["total"]);
+					.text("Total Incidents: " + borough_info[boroArr[j]]["total"]);
 
 
 				for (var key in borough_info[boroArr[j]]) {
@@ -362,7 +362,7 @@ borough names, and accident causes. -->
 
 				group.append("rect")
 					.attr("x", 810)
-					.attr("y", (j*140) + 155)
+					.attr("y", (j*140) + 170)
 					.attr("height", 135)
 					.attr("width", 275)
 					.attr("stroke", fillArrDarker[j])
@@ -370,9 +370,31 @@ borough names, and accident causes. -->
 					.attr("fill", "none");
 			}
 
+		var wild = map.append("g")
+			.attr("id", "wild");
 
-		legend = map.append("g")
-			.attr("id", "legend");
+		wild.append("text")
+			.attr("x", 100)
+			.attr("y", 200)
+			.attr("font-size", 30)
+			.attr("text-anchor", "middle")
+			.attr("font-family", "Anton")
+			.attr("fill", "Grey")
+			.text("THE WILD");
+
+		wild.append("text")
+			.attr("x", 100)
+			.attr("y", 220)
+			.attr("font-size", 15)
+			.attr("font-style", "italic")
+			.attr("text-anchor", "middle")
+			.attr("fill", "Grey")
+			.text("Very rare accident causes");
+
+
+		var legend = map.append("g")
+			.attr("id", "legend")
+			.attr("transform", "translate(450,600)");
 
 		legend.append("text")
 			.attr("x", 110)
@@ -431,7 +453,7 @@ borough names, and accident causes. -->
 		legend.append("rect")
 			.attr("x", 45)
 			.attr("y", 115)
-			.attr("height", 200)
+			.attr("height", 180)
 			.attr("width", 130)
 			.attr("stroke", "black")
 			.attr("stroke-width", 2)
@@ -442,28 +464,29 @@ borough names, and accident causes. -->
 			.attr("d", "M 70 167 L 70 245")
 			.attr("stroke", "black");
 
-		map.append("path")
+		var linegroup = map.append("g")
 			.attr("id", "pointerpath")
-			.attr("d", "M 350 200 L 700 155 L 810 155")
+			.attr("stroke-width", 2)
+			.attr("fill", "none")
+			.attr("transform", "translate(50,55)");
+
+		linegroup.append("path")
+			.attr("d", "M 350 200 L 650 155 L 810 155")
 			.attr("stroke", fillArrDarker[0]);
 
-		map.append("path")
-			.attr("id", "pointerpath")
+		linegroup.append("path")
 			.attr("d", "M 250 350 L 650 295 L 810 295")
 			.attr("stroke", fillArrDarker[1]);
 
-		map.append("path")
-			.attr("id", "pointerpath")
+		linegroup.append("path")
 			.attr("d", "M 450 400 L 690 435 L 810 435")
 			.attr("stroke", fillArrDarker[2]);
 
-		map.append("path")
-			.attr("id", "pointerpath")
+		linegroup.append("path")
 			.attr("d", "M 320 550 L 680 575 L 810 575")
 			.attr("stroke", fillArrDarker[3]);
 
-		map.append("path")
-			.attr("id", "pointerpath")
+		linegroup.append("path")
 			.attr("d", "M 120 720 L 620 715 L 810 715")
 			.attr("stroke", fillArrDarker[4]);
 		};
@@ -471,23 +494,23 @@ borough names, and accident causes. -->
 
 				//UNCOMMENT THE CODE BELOW TO GET GREY GRIDLINES WHICH ARE USEFUL FOR PLACING THINGS
 
-			// for (k=0;k<12;k++){
-			// 	map.append("line")
-			// 		.attr("x1", (k*100) + 100)
-			// 		.attr("y1", 0)
-			// 		.attr("x2", (k*100) + 100)
-			// 		.attr("y2", 900)
-			// 		.attr("stroke", "LightGrey");
-			// }
-			//
-			// for (k=0;k<8;k++){
-			// 	map.append("line")
-			// 		.attr("x1", 0)
-			// 		.attr("y1", (k*100) + 100)
-			// 		.attr("x2", 1200)
-			// 		.attr("y2", (k*100) + 100)
-			// 		.attr("stroke", "LightGrey");
-			// }
+			for (k=0;k<12;k++){
+				map.append("line")
+					.attr("x1", (k*100) + 100)
+					.attr("y1", 0)
+					.attr("x2", (k*100) + 100)
+					.attr("y2", 900)
+					.attr("stroke", "LightGrey");
+			}
+
+			for (k=0;k<8;k++){
+				map.append("line")
+					.attr("x1", 0)
+					.attr("y1", (k*100) + 100)
+					.attr("x2", 1200)
+					.attr("y2", (k*100) + 100)
+					.attr("stroke", "LightGrey");
+			}
 
 		</script>
 
