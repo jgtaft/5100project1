@@ -1,0 +1,111 @@
+<html>
+<head>
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+  <script src="http://d3js.org/topojson.v2.min.js"></script>
+
+  <style>
+  </style>
+</head>
+<body>
+  <svg width="960" height="680"> </svg>
+
+<script>
+//https://medium.com/@ccanipe/building-a-u-s-election-basemap-with-d3-js-and-topojson-fa4b5ab5175d#.yvbuz82dn
+
+var map = d3.select("svg");
+var projection = d3.geoConicEqualArea();
+var pathGenerator = d3.geoPath().projection(projection);
+
+var areas;
+
+var points = [];
+
+function parseLine(line){
+  return [Number(line["LONGITUDE"]), Number(line["LATITUDE"]), Number(line["PERSONS INJURED"]), Number(line["PERSONS KILLED"])];
+};
+
+function parsePop(line){
+  line.
+}
+
+d3.queue()
+  .defer(d3.json, "census.geo.json")
+  .defer(d3.csv, "collisionsClean.csv", parseLine)
+  .defer(d3.csv, "popByTract.json")
+  .await(function(error, rawMap, rawData, rawPop){
+
+    areas = topojson.feature(rawMap, rawMap.objects.nyct2010);
+    console.log(rawMap);
+
+    points = rawData;
+    console.log(rawPop);
+
+    //showMap();
+  });
+
+//console.log(points); //undefined
+function showMap() {
+
+	projection.fitExtent([[0,0], [map.attr("width"), map.attr("height")]], areas);
+	pathGenerator = d3.geoPath().projection(projection);
+
+	var paths = map.selectAll("path.areas").data(areas.features);
+	paths.enter().append("path").attr("class", "areas")
+	.merge(paths)
+	.attr("d", function(areas) {
+		return pathGenerator(areas);
+	} )
+  .attr("fill", "LightGrey");
+
+  for(i=0; i<points.length; i++){
+
+    map.append("circle")
+    .attr("r", size)
+    .attr("cx", projection(points[i])[0])
+    .attr("cy", projection(points[i])[1])
+    .attr("fill", fillcolor)
+    .attr("opacity", opac);
+  }
+
+  function fillcolor(){
+    if (points[i][2]>=1){
+      return "red";
+    }if (points[i][3]>=1){
+      return "green";
+    }else{
+      return "none";
+    }
+  }
+
+  function opac(){
+    if (points[i][2]>=1){
+      return ".4";
+    }if (points[i][3]>=1){
+      return "1";
+    }else{
+      return ".2";
+    }
+  }
+
+  function size(){
+    if (points[i][2]>=1){
+      return "1";
+    }if (points[i][3]>=1){
+      return "3";
+    }else{
+      return "1";
+    }
+  }
+
+  // collisions.enter().append("circle").attr("r", 1)
+  //   .merge(collisions)
+  //   .attr("cx", function(points){return projection(points[1].long)})
+  //   .attr("cy", function(d){return projection(d[1].lat)})
+  //   // .attr("cx", getpoint.long)
+  //   // .attr("cy", getpoint.lat)
+  //   .attr("fill", "black");
+};
+
+</script>
+
+</body></html>

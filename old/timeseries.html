@@ -1,0 +1,55 @@
+<html>
+<head>
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+  <style>
+  svg { border: solid #ccc 1px; }
+  </style>
+</head>
+<body>
+  <svg id="timeplot" width="1000" height="800"></svg>
+  <script>
+
+  var dateScale = d3.scaleTime().domain([new Date("2015-01-01"), new Date("2015-04-28")]).range([0, 800]);
+  var dateAxis = d3.axisBottom(dateScale);
+
+  var crashScale = d3.scaleLinear().domain([0,2300]).range([350, 0]);
+  var crashAxis = d3.axisLeft(employmentScale);
+
+  var pathGenerator = d3.line() //returns a function that converts data to an array which defines a path.
+  .x(function (d) { return dateScale(d.Date); })
+  .y(function (d) { return employmentScale(d.Employment); });
+
+  var boroughColors = d3.scaleOrdinal.domain(d3.range(5))
+    .range(["#a0e3b7", "#2a8665", "#21f0b6", "#304866", "#bcaff9"]);
+
+  function parseLine(line){
+    line.DATE= new Date(line.DATE);
+    // line.BOROUGH = line.BOROUGH;
+
+    return line;
+  }
+
+  d3.csv("collisions.csv", parseLine, function(error, data){
+    rawData = data;
+    nestedData = d3.nest()
+    .key(function (d) { return d.BOROUGH; })
+    .entries(data);
+
+    showTrends(nestedData);
+
+  });
+
+  function showTrends(data){
+
+    var paths = timeplot.selectAll("path.lineGraph").data(data);
+    paths.enter().append("path")
+      .merge(paths)
+      .attr("class", "lineGraph")
+      .attr("d", function(borough){ return pathGenerator(borough.values); })
+      .style("stroke", function(borough,i){ return })
+
+  }
+
+  </script>
+</body>
+</head>
